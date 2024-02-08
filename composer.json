@@ -1,0 +1,29 @@
+{
+  "name": "yarovikov/gutengood",
+  "description": "Base for yours blocks",
+  "license": "MIT",
+  "type": "package",
+  "authors": [
+    {
+      "name": "Yarovikov",
+      "email": "alex.yarovikov@gmail.com",
+      "homepage": "https://yarovikov.com/",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Yarovikov\\Gutengood\\": "src/"
+    }
+  },
+  "extra": {
+    "acorn": {
+      "providers": [
+        "Yarovikov\\Gutengood\\Providers\\BlockServiceProvider"
+      ]
+    }
+  }
+}
