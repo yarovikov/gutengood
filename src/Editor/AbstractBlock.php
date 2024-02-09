@@ -6,6 +6,7 @@ namespace Yarovikov\Gutengood\Editor;
 
 use Illuminate\View\View;
 
+use WP_Post;
 use function Roots\bundle;
 
 class AbstractBlock
@@ -65,6 +66,38 @@ class AbstractBlock
             'is_editor' => $this->checkIfTheEditor(),
             'attributes' => (object) $attributes,
         ];
+    }
+
+    /**
+     * Enqueue js/css block
+     *
+     * @return void
+     */
+    public function enqueue(): void
+    {
+        $dependencies = $this->dependencies;
+
+        if (empty($dependencies)) {
+            return;
+        }
+
+        $post = get_post();
+        if (!$post instanceof WP_Post) {
+            return;
+        }
+
+        $blocks = parse_blocks($post->post_content);
+        if (empty($blocks)) {
+            return;
+        }
+
+        foreach ($blocks as $block) {
+            if ($this->name === $block['blockName']) {
+                array_map(function (string $dependency): void {
+                    bundle($dependency)->enqueue();
+                }, $dependencies);
+            }
+        }
     }
 
     public function blockEndpoint(): void

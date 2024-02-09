@@ -30,6 +30,8 @@ class BlockServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        add_action('wp_enqueue_scripts', [$this, 'enqueue']);
+        add_action('enqueue_block_editor_assets', [$this, 'enqueue']);
         add_action('init', [$this, 'registerMeta']);
         add_action('rest_api_init', [$this, 'blockEndpoint']);
     }
@@ -73,6 +75,24 @@ class BlockServiceProvider extends ServiceProvider
 
         foreach ($blocks as $block) {
             $this->app[$block]->registerBlockType();
+        }
+    }
+
+    /**
+     * Enqueue the block assets with the block editor and front-end.
+     *
+     * @return void
+     */
+    public function enqueue(): void
+    {
+        $blocks = $this->blocks;
+
+        if (empty($blocks)) {
+            return;
+        }
+
+        foreach ($blocks as $block) {
+            $this->app[$block]->enqueue();
         }
     }
 
