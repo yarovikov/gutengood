@@ -110,7 +110,7 @@ class AbstractBlock
     }
 
     /**
-     * Pass php data to js
+     * Pass php data to js (used rest api for fetch data in the editor)
      *
      * @return array
      */
@@ -122,6 +122,11 @@ class AbstractBlock
         ];
     }
 
+    /**
+     * Available components see here resources/scripts/editor/components/block-options.js
+     *
+     * @return array[]
+     */
     public function options(): array
     {
         return [];

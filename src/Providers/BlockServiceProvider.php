@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yarovikov\Gutengood\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use WP_Block_Type_Registry;
 
 class BlockServiceProvider extends ServiceProvider
 {
@@ -60,7 +61,7 @@ class BlockServiceProvider extends ServiceProvider
     public function formatFile(string $class, string $file): object
     {
         return (object) [
-            'handle' => strtolower($class) . '.' . strtolower(basename(preg_replace('/[A-Z]/', '-$0', $file), '.php')),
+            'handle' => substr(strtolower(basename(preg_replace('/[A-Z]/', '-$0', $file), '.php')), 1),
             'class' => '\\App\\' . str_replace('/', '\\', $class) . '\\' . basename($file, '.php'),
         ];
     }
@@ -74,7 +75,9 @@ class BlockServiceProvider extends ServiceProvider
         }
 
         foreach ($blocks as $block) {
-            $this->app[$block]->registerBlockType();
+            if (!WP_Block_Type_Registry::get_instance()->is_registered($this->app[$block]->name)) {
+                $this->app[$block]->registerBlockType();
+            }
         }
     }
 
