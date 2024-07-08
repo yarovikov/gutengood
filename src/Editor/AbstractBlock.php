@@ -26,7 +26,7 @@ class AbstractBlock
 	public string $view = '';
 
 	/**
-	 * Js/css block dependencies. Use bud config
+	 * Js remote dependencies
 	 *
 	 * @var array
 	 */
@@ -51,7 +51,7 @@ class AbstractBlock
 	/**
 	 * Block data
 	 *
-	 * @param array  $attributes
+	 * @param array $attributes
 	 * @param string $content
 	 *
 	 * @return array
@@ -75,9 +75,9 @@ class AbstractBlock
 	 */
 	public function enqueue(): void
 	{
-		$dependencies = $this->dependencies;
+		$assets = $this->getAssets();
 
-		if (empty($dependencies)) {
+		if (empty($assets)) {
 			return;
 		}
 
@@ -93,9 +93,11 @@ class AbstractBlock
 
 		foreach ($blocks as $block) {
 			if ($this->name === $block['blockName']) {
-				array_map(function (string $dependency): void {
-					bundle($dependency)->enqueue();
-				}, $dependencies);
+				array_map(function (array $asset) use ($block): void {
+					if (empty($asset['condition']) || (is_callable($asset['condition']) && $asset['condition']($block))) {
+						bundle($asset['handle'])->enqueue();
+					}
+				}, $assets);
 			}
 		}
 	}
@@ -162,5 +164,16 @@ class AbstractBlock
 	public function checkIfTheEditor(): bool
 	{
 		return defined('REST_REQUEST') && REST_REQUEST;
+	}
+
+	/**
+	 * Js/css block assets. Use bud config
+	 *
+	 *
+	 * @return array
+	 */
+	public function getAssets(): array
+	{
+		return [];
 	}
 }
