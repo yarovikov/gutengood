@@ -43,7 +43,10 @@ class AbstractBlock
 	public function registerBlockType(): void
 	{
 		register_block_type($this->name, [
-			'attributes' => $this->attributes,
+			'attributes' => [
+				...$this->attributes,
+				...$this->defaultAttributes(),
+			],
 			'render_callback' => fn(array $attributes, string $content): View => view($this->view, $this->getBlockData($attributes, $content)),
 		]);
 	}
@@ -58,10 +61,13 @@ class AbstractBlock
 	 */
 	public function getBlockData(array $attributes, string $content): array
 	{
+		$block_id = uniqid((str_replace(['/', '-'], '_', $this->name)) . '_');
+
 		return [
 			'name' => $this->name,
 			'block_class' => 'gutengood-block' . (!empty($attributes['className']) ? ' ' . $attributes['className'] : ''),
-			'block_id' => uniqid((str_replace(['/', '-'], '_', $this->name)) . '_'),
+			'block_id' => $block_id,
+			'block_styles' => $this->getBlockStyles($attributes, $block_id),
 			'content' => $content,
 			'is_editor' => $this->checkIfTheEditor(),
 			'attributes' => (object) $attributes,
@@ -119,7 +125,10 @@ class AbstractBlock
 	public function blockData(): array
 	{
 		return [
-			'options' => $this->options(),
+			'options' => [
+				...$this->options(),
+				...$this->defaultOptions(),
+			],
 			'data' => $this->data(),
 		];
 	}
@@ -127,11 +136,68 @@ class AbstractBlock
 	/**
 	 * Available components see here resources/scripts/editor/components/block-options.js
 	 *
-	 * @return array[]
+	 * @return array
 	 */
 	public function options(): array
 	{
 		return [];
+	}
+
+	public function defaultOptions(): array
+	{
+		return [
+			[
+				'name' => 'margin_top_desktop',
+				'type' => 'TextControl',
+				'label' => 'Margin Top Desktop',
+				'value' => '',
+			],
+			[
+				'name' => 'margin_top_mobile',
+				'type' => 'TextControl',
+				'label' => 'Margin Top Mobile',
+				'value' => '',
+			],
+			[
+				'name' => 'margin_bottom_desktop',
+				'type' => 'TextControl',
+				'label' => 'Margin Bottom Desktop',
+				'value' => '',
+			],
+			[
+				'name' => 'margin_bottom_mobile',
+				'type' => 'TextControl',
+				'label' => 'Margin Bottom Mobile',
+				'value' => '',
+			],
+		];
+	}
+
+	/**
+	 * Default attributes (margins). Used for block_styles
+	 *
+	 * @return array
+	 */
+	public function defaultAttributes(): array
+	{
+		return [
+			'margin_top_desktop' => [
+				'type' => 'string',
+				'default' => '0',
+			],
+			'margin_top_mobile' => [
+				'type' => 'string',
+				'default' => '0',
+			],
+			'margin_bottom_desktop' => [
+				'type' => 'string',
+				'default' => '0',
+			],
+			'margin_bottom_mobile' => [
+				'type' => 'string',
+				'default' => '0',
+			],
+		];
 	}
 
 	public function data(): array
@@ -175,5 +241,35 @@ class AbstractBlock
 	public function getAssets(): array
 	{
 		return [];
+	}
+
+	/**
+	 * Default inline block styles.
+	 *
+	 * Check block blade view. Use in your app.css like this
+	 * .gutengood-block {
+	 *   margin-top: var(--block-margin-top-mobile);
+	 *   margin-bottom: var(--block-margin-bottom-mobile);
+	 *   @media screen(lg) {
+	 *     margin-top: var(--block-margin-top-desktop);
+	 *     margin-bottom: var(--block-margin-bottom-desktop);
+	 *   }
+	 * }
+	 *
+	 * @return string
+	 */
+	public function getBlockStyles(array $attributes, string $block_id): string
+	{
+		$margins = [
+			'--block-margin-top-desktop' => (int) ($attributes['margin_top_desktop'] ?? 0),
+			'--block-margin-bottom-desktop' => (int) ($attributes['margin_bottom_desktop'] ?? 0),
+			'--block-margin-top-mobile' => (int) ($attributes['margin_top_mobile'] ?? 0),
+			'--block-margin-bottom-mobile' => (int) ($attributes['margin_bottom_mobile'] ?? 0),
+		];
+
+		$styles = implode(';', array_map(fn($key, $value) => "{$key}:{$value}px", array_keys($margins), $margins));
+		$styles = "<style>#{$block_id}{{$styles}}</style>";
+
+		return wp_kses($styles, ['style' => []]);
 	}
 }
