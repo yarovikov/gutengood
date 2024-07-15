@@ -99,7 +99,7 @@ class AbstractBlock
             if ($this->name === $block['blockName']) {
                 array_map(function (array $asset) use ($block): void {
                     if (empty($asset['condition']) || (is_callable($asset['condition']) && $asset['condition']($block))) {
-                        if (!empty($asset['dependencies'])) {
+                        if (!empty($asset['dependencies']) && false === is_admin()) {
                             bundle($asset['handle'])->enqueueJs(true, $asset['dependencies']);
                         } else {
                             bundle($asset['handle'])->enqueue();
