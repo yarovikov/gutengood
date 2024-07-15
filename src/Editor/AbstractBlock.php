@@ -26,13 +26,6 @@ class AbstractBlock
     public string $view = '';
 
     /**
-     * Js remote dependencies
-     *
-     * @var array
-     */
-    public array $dependencies = [];
-
-    /**
      * Block attributes
      *
      * Types: null, boolean, object, array, string, integer
@@ -106,7 +99,11 @@ class AbstractBlock
             if ($this->name === $block['blockName']) {
                 array_map(function (array $asset) use ($block): void {
                     if (empty($asset['condition']) || (is_callable($asset['condition']) && $asset['condition']($block))) {
-                        bundle($asset['handle'])->enqueue();
+                        if (!empty($asset['dependencies'])) {
+                            bundle($asset['handle'])->enqueueJs(true, $asset['dependencies']);
+                        } else {
+                            bundle($asset['handle'])->enqueue();
+                        }
                     }
                 }, $assets);
             }
