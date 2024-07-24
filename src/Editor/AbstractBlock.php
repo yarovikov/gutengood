@@ -68,7 +68,7 @@ class AbstractBlock
                     'type' => 'string',
                     'default' => (string) ($option['default_value'] ?? ''),
                 ],
-                'MediaUpload' => [
+                'MediaUpload', 'RangeControl' => [
                     'type' => 'integer',
                     'default' => (int) ($option['default_value'] ?? ''),
                 ],
