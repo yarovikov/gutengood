@@ -77,6 +77,10 @@ class AbstractBlock
                     'type' => 'boolean',
                     'default' => (bool) ($field_or_option['default_value'] ?? ''),
                 ],
+                'Gallery', 'Repeater' => [
+                    'type' => 'array',
+                    'default' => array_filter((array) ($field_or_option['default_value'] ?? [])),
+                ],
                 default => null,
             };
         }
