@@ -32,7 +32,7 @@ class BlockServiceProvider extends ServiceProvider
     public function boot(): void
     {
         add_action('wp_enqueue_scripts', [$this, 'enqueue']);
-        add_action('enqueue_block_editor_assets', [$this, 'enqueue']);
+        add_action('enqueue_block_editor_assets', [$this, 'enqueueBlockEditorAssets']);
         add_action('init', [$this, 'registerMeta']);
         add_action('rest_api_init', [$this, 'blockEndpoint']);
     }
@@ -97,6 +97,29 @@ class BlockServiceProvider extends ServiceProvider
         foreach ($blocks as $block) {
             $this->app[$block]->enqueue();
         }
+    }
+
+    public function enqueueBlockEditorAssets(): void
+    {
+        $blocks = $this->blocks;
+
+        if (empty($blocks)) {
+            return;
+        }
+
+        $gutengood_blocks = [];
+
+        foreach ($blocks as $block) {
+            if (false === $this->app[$block]->editor_script) {
+                $gutengood_blocks[] = $block;
+            }
+        }
+
+        if (empty($gutengood_blocks)) {
+            return;
+        }
+
+        wp_localize_script('editor', 'gutengoodBlocks', $gutengood_blocks);
     }
 
     public function blockEndpoint(): void

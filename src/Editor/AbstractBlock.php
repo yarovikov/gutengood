@@ -12,7 +12,7 @@ use function Roots\bundle;
 class AbstractBlock
 {
     /**
-     * Block mame. Must match the name in js
+     * Block mame
      *
      * @var string
      */
@@ -26,22 +26,61 @@ class AbstractBlock
     public string $view = '';
 
     /**
+     * Block editor js if you want to use own block js
+     * By default used editor/block-register.js for all blocks
+     *
+     * @var bool
+     */
+    public bool $editor_script = false;
+
+    public function registerBlockType(): void
+    {
+        $attributes = $this->getAttributes();
+
+        register_block_type($this->name, [
+            'attributes' => [...$attributes],
+            'render_callback' => fn(array $attributes, string $content): View => view($this->view, $this->getBlockData($attributes, $content)),
+        ]);
+    }
+
+    /**
      * Block attributes
      *
      * Types: null, boolean, object, array, string, integer
      * @var array
      */
-    public array $attributes = [];
-
-    public function registerBlockType(): void
+    public function getAttributes(): array
     {
-        register_block_type($this->name, [
-            'attributes' => [
-                ...$this->attributes,
-                ...$this->defaultAttributes(),
-            ],
-            'render_callback' => fn(array $attributes, string $content): View => view($this->view, $this->getBlockData($attributes, $content)),
-        ]);
+        $attributes = [];
+
+        $options = [
+            ...$this->options(),
+            ...$this->defaultOptions(),
+        ];
+
+        if (empty($options)) {
+            return [];
+        }
+
+        foreach ($options as $option) {
+            $attributes[$option['name']] = match ($option['type']) {
+                'TextControl', 'TextareaControl', 'SelectControl', 'ColorPalette' => [
+                    'type' => 'string',
+                    'default' => (string) ($option['default_value'] ?? ''),
+                ],
+                'MediaUpload' => [
+                    'type' => 'integer',
+                    'default' => (int) ($option['default_value'] ?? ''),
+                ],
+                'ToggleControl' => [
+                    'type' => 'boolean',
+                    'default' => (bool) ($option['default_value'] ?? ''),
+                ],
+                default => null,
+            };
+        }
+
+        return array_filter($attributes);
     }
 
     /**
@@ -136,8 +175,20 @@ class AbstractBlock
                 ...$this->options(),
                 ...$this->defaultOptions(),
             ],
-            'data' => $this->data(),
+            'fields' => [
+                ...$this->fields(),
+            ],
         ];
+    }
+
+    /**
+     * Available components see here resources/scripts/editor/components/block-options.js
+     *
+     * @return array
+     */
+    public function fields(): array
+    {
+        return [];
     }
 
     /**
@@ -157,59 +208,27 @@ class AbstractBlock
                 'name' => 'margin_top_desktop',
                 'type' => 'TextControl',
                 'label' => 'Margin Top Desktop',
-                'value' => '',
+                'default_value' => '0',
             ],
             [
                 'name' => 'margin_top_mobile',
                 'type' => 'TextControl',
                 'label' => 'Margin Top Mobile',
-                'value' => '',
+                'default_value' => '0',
             ],
             [
                 'name' => 'margin_bottom_desktop',
                 'type' => 'TextControl',
                 'label' => 'Margin Bottom Desktop',
-                'value' => '',
+                'default_value' => '0',
             ],
             [
                 'name' => 'margin_bottom_mobile',
                 'type' => 'TextControl',
                 'label' => 'Margin Bottom Mobile',
-                'value' => '',
+                'default_value' => '0',
             ],
         ];
-    }
-
-    /**
-     * Default attributes (margins). Used for block_styles
-     *
-     * @return array
-     */
-    public function defaultAttributes(): array
-    {
-        return [
-            'margin_top_desktop' => [
-                'type' => 'string',
-                'default' => '0',
-            ],
-            'margin_top_mobile' => [
-                'type' => 'string',
-                'default' => '0',
-            ],
-            'margin_bottom_desktop' => [
-                'type' => 'string',
-                'default' => '0',
-            ],
-            'margin_bottom_mobile' => [
-                'type' => 'string',
-                'default' => '0',
-            ],
-        ];
-    }
-
-    public function data(): array
-    {
-        return [];
     }
 
     /**
@@ -251,17 +270,7 @@ class AbstractBlock
     }
 
     /**
-     * Default inline block styles.
-     *
-     * Check block blade view. Use in your app.css like this
-     * .gutengood-block {
-     *   margin-top: var(--block-margin-top-mobile);
-     *   margin-bottom: var(--block-margin-bottom-mobile);
-     * @media screen(lg) {
-     *     margin-top: var(--block-margin-top-desktop);
-     *     margin-bottom: var(--block-margin-bottom-desktop);
-     *   }
-     * }
+     * Default inline block styles
      *
      * @return string
      */
