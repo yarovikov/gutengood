@@ -53,28 +53,29 @@ class AbstractBlock
     {
         $attributes = [];
 
-        $options = [
+        $fields_and_options = [
+            ...$this->fields(),
             ...$this->options(),
             ...$this->defaultOptions(),
         ];
 
-        if (empty($options)) {
+        if (empty($fields_and_options)) {
             return [];
         }
 
-        foreach ($options as $option) {
-            $attributes[$option['name']] = match ($option['type']) {
-                'TextControl', 'TextareaControl', 'SelectControl', 'ColorPalette' => [
+        foreach ($fields_and_options as $field_or_option) {
+            $attributes[$field_or_option['name']] = match ($field_or_option['type']) {
+                'TextControl', 'TextareaControl', 'SelectControl', 'ColorPalette', 'RichText' => [
                     'type' => 'string',
-                    'default' => (string) ($option['default_value'] ?? ''),
+                    'default' => (string) ($field_or_option['default_value'] ?? ''),
                 ],
                 'MediaUpload', 'RangeControl' => [
                     'type' => 'integer',
-                    'default' => (int) ($option['default_value'] ?? ''),
+                    'default' => (int) ($field_or_option['default_value'] ?? ''),
                 ],
                 'ToggleControl' => [
                     'type' => 'boolean',
-                    'default' => (bool) ($option['default_value'] ?? ''),
+                    'default' => (bool) ($field_or_option['default_value'] ?? ''),
                 ],
                 default => null,
             };
