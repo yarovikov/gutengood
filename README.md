@@ -8,14 +8,14 @@ Requirements: [Acorn + Sage](https://roots.io)
 composer require yarovikov/gutengood
 ```
 
-#### Available components for Options (InspectorControls):
-- TextControl
-- TextareaControl
-- ToggleControl
-- SelectControl
+#### Available components for Options (InspectorControls) and Repeater:
+- Text
+- Textarea
+- Toggle
+- Select
 - ColorPalette
-- MediaUpload
-- RangeControl
+- Image
+- Range
 
 #### Available components for Fields (Block Edit Tab):
 - RichText
