@@ -65,15 +65,15 @@ class AbstractBlock
 
         foreach ($fields_and_options as $field_or_option) {
             $attributes[$field_or_option['name']] = match ($field_or_option['type']) {
-                'TextControl', 'TextareaControl', 'SelectControl', 'ColorPalette', 'RichText' => [
+                'Text', 'Textarea', 'Select', 'ColorPalette', 'RichText' => [
                     'type' => 'string',
                     'default' => (string) ($field_or_option['default_value'] ?? ''),
                 ],
-                'MediaUpload', 'RangeControl' => [
+                'Image', 'Range' => [
                     'type' => 'integer',
                     'default' => (int) ($field_or_option['default_value'] ?? ''),
                 ],
-                'ToggleControl' => [
+                'Toggle' => [
                     'type' => 'boolean',
                     'default' => (bool) ($field_or_option['default_value'] ?? ''),
                 ],
@@ -211,25 +211,25 @@ class AbstractBlock
         return [
             [
                 'name' => 'margin_top_desktop',
-                'type' => 'TextControl',
+                'type' => 'Text',
                 'label' => 'Margin Top Desktop',
                 'default_value' => '0',
             ],
             [
                 'name' => 'margin_top_mobile',
-                'type' => 'TextControl',
+                'type' => 'Text',
                 'label' => 'Margin Top Mobile',
                 'default_value' => '0',
             ],
             [
                 'name' => 'margin_bottom_desktop',
-                'type' => 'TextControl',
+                'type' => 'Text',
                 'label' => 'Margin Bottom Desktop',
                 'default_value' => '0',
             ],
             [
                 'name' => 'margin_bottom_mobile',
-                'type' => 'TextControl',
+                'type' => 'Text',
                 'label' => 'Margin Bottom Mobile',
                 'default_value' => '0',
             ],
