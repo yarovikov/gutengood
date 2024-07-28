@@ -12,6 +12,13 @@ use function Roots\bundle;
 class AbstractBlock
 {
     /**
+     * Block title
+     *
+     * @var string
+     */
+    public string $title = '';
+
+    /**
      * Block mame
      *
      * @var string
@@ -211,25 +218,25 @@ class AbstractBlock
         return [
             [
                 'name' => 'margin_top_desktop',
-                'type' => 'Text',
+                'type' => 'TextControl',
                 'label' => 'Margin Top Desktop',
                 'default_value' => '0',
             ],
             [
                 'name' => 'margin_top_mobile',
-                'type' => 'Text',
+                'type' => 'TextControl',
                 'label' => 'Margin Top Mobile',
                 'default_value' => '0',
             ],
             [
                 'name' => 'margin_bottom_desktop',
-                'type' => 'Text',
+                'type' => 'TextControl',
                 'label' => 'Margin Bottom Desktop',
                 'default_value' => '0',
             ],
             [
                 'name' => 'margin_bottom_mobile',
-                'type' => 'Text',
+                'type' => 'TextControl',
                 'label' => 'Margin Bottom Mobile',
                 'default_value' => '0',
             ],

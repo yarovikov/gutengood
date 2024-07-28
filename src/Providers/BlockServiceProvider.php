@@ -111,7 +111,10 @@ class BlockServiceProvider extends ServiceProvider
 
         foreach ($blocks as $block) {
             if (false === $this->app[$block]->editor_script) {
-                $gutengood_blocks[] = $block;
+                $gutengood_blocks[] = (object) [
+                    'title' => $this->app[$block]->title,
+                    'name' => $this->app[$block]->name,
+                ];
             }
         }
 
