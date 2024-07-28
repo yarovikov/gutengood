@@ -218,27 +218,27 @@ class AbstractBlock
         return [
             [
                 'name' => 'margin_top_desktop',
-                'type' => 'TextControl',
+                'type' => 'Text',
                 'label' => 'Margin Top Desktop',
-                'default_value' => '0',
+                'default_value' => 0,
             ],
             [
                 'name' => 'margin_top_mobile',
-                'type' => 'TextControl',
+                'type' => 'Text',
                 'label' => 'Margin Top Mobile',
-                'default_value' => '0',
+                'default_value' => 0,
             ],
             [
                 'name' => 'margin_bottom_desktop',
-                'type' => 'TextControl',
+                'type' => 'Text',
                 'label' => 'Margin Bottom Desktop',
-                'default_value' => '0',
+                'default_value' => 0,
             ],
             [
                 'name' => 'margin_bottom_mobile',
-                'type' => 'TextControl',
+                'type' => 'Text',
                 'label' => 'Margin Bottom Mobile',
-                'default_value' => '0',
+                'default_value' => 0,
             ],
         ];
     }
