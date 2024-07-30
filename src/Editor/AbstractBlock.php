@@ -11,6 +11,11 @@ use function Roots\bundle;
 
 class AbstractBlock
 {
+    public const MARGIN_TOP_DESKTOP = 0;
+    public const MARGIN_BOTTOM_DESKTOP = 0;
+    public const MARGIN_TOP_MOBILE = 0;
+    public const MARGIN_BOTTOM_MOBILE = 0;
+
     /**
      * Block title
      *
@@ -219,28 +224,28 @@ class AbstractBlock
     {
         return [
             [
-                'name' => 'margin_top_desktop',
+                'name' => ' ',
                 'type' => 'Text',
                 'label' => 'Margin Top Desktop',
-                'default_value' => 0,
+                'default_value' => static::MARGIN_TOP_DESKTOP,
             ],
             [
                 'name' => 'margin_top_mobile',
                 'type' => 'Text',
                 'label' => 'Margin Top Mobile',
-                'default_value' => 0,
+                'default_value' => static::MARGIN_TOP_MOBILE,
             ],
             [
                 'name' => 'margin_bottom_desktop',
                 'type' => 'Text',
                 'label' => 'Margin Bottom Desktop',
-                'default_value' => 0,
+                'default_value' => static::MARGIN_BOTTOM_DESKTOP,
             ],
             [
                 'name' => 'margin_bottom_mobile',
                 'type' => 'Text',
                 'label' => 'Margin Bottom Mobile',
-                'default_value' => 0,
+                'default_value' => static::MARGIN_BOTTOM_MOBILE,
             ],
         ];
     }
