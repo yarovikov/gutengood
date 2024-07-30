@@ -136,7 +136,9 @@ class AbstractBlock
             return;
         }
 
-        $blocks = parse_blocks($post->post_content);
+        $content = (string) apply_filters('content_with_gutengood_blocks', $post->post_content);
+
+        $blocks = parse_blocks($content);
         if (empty($blocks)) {
             return;
         }
