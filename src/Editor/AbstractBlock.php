@@ -224,7 +224,7 @@ class AbstractBlock
     {
         return [
             [
-                'name' => ' ',
+                'name' => 'margin_top_desktop',
                 'type' => 'Text',
                 'label' => 'Margin Top Desktop',
                 'default_value' => static::MARGIN_TOP_DESKTOP,
