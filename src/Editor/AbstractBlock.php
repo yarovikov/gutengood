@@ -79,19 +79,19 @@ class AbstractBlock
             $attributes[$field_or_option['name']] = match ($field_or_option['type']) {
                 'Text', 'Textarea', 'Select', 'ColorPalette', 'RichText' => [
                     'type' => 'string',
-                    'default' => (string) ($field_or_option['default_value'] ?? ''),
+                    'default' => (string) ($field_or_option['value'] ?? ''),
                 ],
                 'Image', 'Range' => [
                     'type' => 'integer',
-                    'default' => (int) ($field_or_option['default_value'] ?? ''),
+                    'default' => (int) ($field_or_option['value'] ?? ''),
                 ],
                 'Toggle' => [
                     'type' => 'boolean',
-                    'default' => (bool) ($field_or_option['default_value'] ?? ''),
+                    'default' => (bool) ($field_or_option['value'] ?? ''),
                 ],
                 'Gallery', 'Repeater' => [
                     'type' => 'array',
-                    'default' => array_filter((array) ($field_or_option['default_value'] ?? [])),
+                    'default' => array_filter((array) ($field_or_option['value'] ?? [])),
                 ],
                 default => null,
             };
@@ -227,25 +227,25 @@ class AbstractBlock
                 'name' => 'margin_top_desktop',
                 'type' => 'Text',
                 'label' => 'Margin Top Desktop',
-                'default_value' => static::MARGIN_TOP_DESKTOP,
+                'value' => static::MARGIN_TOP_DESKTOP,
             ],
             [
                 'name' => 'margin_top_mobile',
                 'type' => 'Text',
                 'label' => 'Margin Top Mobile',
-                'default_value' => static::MARGIN_TOP_MOBILE,
+                'value' => static::MARGIN_TOP_MOBILE,
             ],
             [
                 'name' => 'margin_bottom_desktop',
                 'type' => 'Text',
                 'label' => 'Margin Bottom Desktop',
-                'default_value' => static::MARGIN_BOTTOM_DESKTOP,
+                'value' => static::MARGIN_BOTTOM_DESKTOP,
             ],
             [
                 'name' => 'margin_bottom_mobile',
                 'type' => 'Text',
                 'label' => 'Margin Bottom Mobile',
-                'default_value' => static::MARGIN_BOTTOM_MOBILE,
+                'value' => static::MARGIN_BOTTOM_MOBILE,
             ],
         ];
     }
