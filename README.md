@@ -23,4 +23,4 @@ composer require yarovikov/gutengood
 
 Repeater must contain an array of fields.
 
-Examples and js part are here https://github.com/yarovikov/gutengood-examples.
+Examples, editor js part and Documentation are here https://github.com/yarovikov/gutengood-examples.
