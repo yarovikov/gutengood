@@ -89,9 +89,16 @@ class AbstractBlock
                     'type' => 'boolean',
                     'default' => (bool) ($field_or_option['value'] ?? ''),
                 ],
-                'Gallery', 'Repeater' => [
+                'Gallery' => [
                     'type' => 'array',
                     'default' => array_filter((array) ($field_or_option['value'] ?? [])),
+                ],
+                'Repeater' => [
+                    'type' => 'array',
+                    'default' => array_map(function (array $item): array {
+                        $item['id'] = substr(hash('sha256', uniqid((string) random_int(1000000000000, 9999999999999), true)), 0, 13);
+                        return $item;
+                    }, array_filter((array) ($field_or_option['value'] ?? []))),
                 ],
                 default => null,
             };
