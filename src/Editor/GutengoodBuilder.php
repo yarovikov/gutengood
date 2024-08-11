@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Editor\Builder;
+namespace Yarovikov\Gutengood\Editor;
 
 class GutengoodBuilder
 {
