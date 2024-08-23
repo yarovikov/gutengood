@@ -6,6 +6,7 @@ namespace Yarovikov\Gutengood\Editor;
 
 use Illuminate\View\View;
 
+use WP_Block_Type_Registry;
 use WP_Post;
 use function Roots\bundle;
 
@@ -162,6 +163,11 @@ class AbstractBlock
     {
         foreach ($blocks as $block) {
             if ($this->name === $block['blockName']) {
+                // Get default attributes
+                $default_attributes = $this->getBlockDefaultAttributes($block['blockName']);
+                // Merge default and changed attributes
+                $block['attrs'] = [...$default_attributes, ...$block['attrs'] ?? []];
+
                 array_map(function (array $asset) use ($block): void {
                     if (empty($asset['condition']) || (is_callable($asset['condition']) && $asset['condition']($block))) {
                         if (!empty($asset['dependencies']) && false === is_admin()) {
@@ -178,6 +184,20 @@ class AbstractBlock
                 $this->enqueueAssets($block['innerBlocks'], $assets);
             }
         }
+    }
+
+    private function getBlockDefaultAttributes(string $block_name): array
+    {
+        $block_registry = WP_Block_Type_Registry::get_instance();
+        $block_type = $block_registry->get_registered($block_name);
+
+        if ($block_type && isset($block_type->attributes)) {
+            return array_map(function (array $attribute): mixed {
+                return isset($attribute['default']) ? $attribute['default'] : null;
+            }, $block_type->attributes);
+        }
+
+        return [];
     }
 
     public function blockEndpoint(): void
