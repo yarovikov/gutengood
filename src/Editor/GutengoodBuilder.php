@@ -8,6 +8,7 @@ class GutengoodBuilder
 {
     protected array $components = [];
     protected array $repeater = [];
+    protected array $section = [];
 
     protected function addComponent(string $name, string $type, array $args = []): self
     {
@@ -17,10 +18,23 @@ class GutengoodBuilder
             ...$args,
         ];
 
-        if (!empty($this->repeater)) {
-            $this->repeater['fields'][] = $component;
+        if (!empty($this->section)) {
+            if (!empty($this->repeater)) {
+                $this->repeater['fields'][] = $component;
+            } else {
+                $this->section['fields'][] = $component;
+            }
         } else {
-            $this->components[] = $component;
+            $this->section = [
+                'name' => __('Block Options'),
+                'type' => 'Section',
+                'open' => true,
+            ];
+            if (!empty($this->repeater)) {
+                $this->repeater['fields'][] = $component;
+            } else {
+                $this->section['fields'][] = $component;
+            }
         }
 
         return $this;
@@ -105,6 +119,8 @@ class GutengoodBuilder
     }
 
     /**
+     * RichText component
+     *
      * @param string $name The name of the component.
      * @param array $args (string placeholder, string value)
      *
@@ -129,6 +145,8 @@ class GutengoodBuilder
     }
 
     /**
+     * Repeater
+     *
      * @param string $name The name of the repeater component.
      *
      * @return self
@@ -146,22 +164,71 @@ class GutengoodBuilder
 
     public function endRepeater(): self
     {
-        $this->components[] = $this->repeater;
+        $this->section['fields'][] = $this->repeater;
         $this->repeater = [];
+
+        return $this;
+    }
+
+    /**
+     * Section. Use this as accordion panel for options
+     *
+     * @param string $name The name of the section.
+     * @param array $args (bool open)
+     *
+     * @return self
+     */
+    public function addSection(string $name, array $args = []): self
+    {
+        if (!empty($this->section)) {
+            $this->components[] = $this->section;
+        }
+
+        $this->section = [
+            'name' => $name,
+            'type' => 'Section',
+            'fields' => [],
+            ...$args,
+        ];
+
+        return $this;
+    }
+
+    public function endSection(): self
+    {
+        if (!empty($this->section)) {
+            $this->components[] = $this->section;
+            $this->section = [];
+        }
 
         return $this;
     }
 
     public function conditional(string $name, mixed $value): self
     {
-        $index = count($this->components) - 1;
-        $this->components[$index]['condition'] = ['name' => $name, 'value' => $value];
+        if (!empty($this->section)) {
+            if (!empty($this->repeater)) {
+                $index = count($this->repeater['fields']) - 1;
+                if ($index >= 0) {
+                    $this->repeater['fields'][$index]['condition'] = ['name' => $name, 'value' => $value];
+                }
+            } else {
+                $index = count($this->section['fields']) - 1;
+                if ($index >= 0) {
+                    $this->section['fields'][$index]['condition'] = ['name' => $name, 'value' => $value];
+                }
+            }
+        }
 
         return $this;
     }
 
     public function build(): array
     {
+        if (!empty($this->section)) {
+            $this->components[] = $this->section;
+        }
+
         return $this->components;
     }
 }

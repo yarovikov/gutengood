@@ -69,7 +69,7 @@ class AbstractBlock
         $fields_and_options = [
             ...$this->fields(),
             ...$this->options(),
-            ...$this->defaultOptions(),
+            ...$this->defaultOptions()['fields'],
         ];
 
         if (empty($fields_and_options)) {
@@ -77,35 +77,46 @@ class AbstractBlock
         }
 
         foreach ($fields_and_options as $field_or_option) {
-            $attributes[$field_or_option['name']] = match ($field_or_option['type']) {
-                'Text', 'Textarea', 'Select', 'ColorPalette', 'RichText' => [
-                    'type' => 'string',
-                    'default' => (string) ($field_or_option['value'] ?? ''),
-                ],
-                'Image', 'Range' => [
-                    'type' => 'integer',
-                    'default' => (int) ($field_or_option['value'] ?? ''),
-                ],
-                'Toggle' => [
-                    'type' => 'boolean',
-                    'default' => (bool) ($field_or_option['value'] ?? ''),
-                ],
-                'Gallery' => [
-                    'type' => 'array',
-                    'default' => array_filter((array) ($field_or_option['value'] ?? [])),
-                ],
-                'Repeater' => [
-                    'type' => 'array',
-                    'default' => array_map(function (array $item): array {
-                        $item['id'] = substr(hash('sha256', uniqid((string) random_int(1000000000000, 9999999999999), true)), 0, 13);
-                        return $item;
-                    }, array_filter((array) ($field_or_option['value'] ?? []))),
-                ],
-                default => null,
-            };
+            if ('Section' === ($field_or_option['type'] ?? '')) {
+                foreach ($field_or_option['fields'] as $section_field_or_option) {
+                    $attributes[$section_field_or_option['name']] = $this->getDefaultAttribute($section_field_or_option['type'], $section_field_or_option['value'] ?? '');
+                }
+            } else {
+                $attributes[$field_or_option['name']] = $this->getDefaultAttribute($field_or_option['type'], $field_or_option['value'] ?? '');
+            }
         }
 
         return array_filter($attributes);
+    }
+
+    public function getDefaultAttribute(string $type, mixed $value): ?array
+    {
+        return match ($type) {
+            'Text', 'Textarea', 'Select', 'ColorPalette', 'RichText' => [
+                'type' => 'string',
+                'default' => (string) ($value ?? ''),
+            ],
+            'Image', 'Range' => [
+                'type' => 'integer',
+                'default' => (int) ($value ?? ''),
+            ],
+            'Toggle' => [
+                'type' => 'boolean',
+                'default' => (bool) ($value ?? ''),
+            ],
+            'Gallery' => [
+                'type' => 'array',
+                'default' => array_filter((array) ($value ?? [])),
+            ],
+            'Repeater' => [
+                'type' => 'array',
+                'default' => array_map(function (array $item): array {
+                    $item['id'] = substr(hash('sha256', uniqid((string) random_int(1000000000000, 9999999999999), true)), 0, 13);
+                    return $item;
+                }, array_filter((array) ($value ?? []))),
+            ],
+            default => null,
+        };
     }
 
     /**
@@ -219,11 +230,9 @@ class AbstractBlock
         return [
             'options' => [
                 ...$this->options(),
-                ...$this->defaultOptions(),
+                $this->defaultOptions(),
             ],
-            'fields' => [
-                ...$this->fields(),
-            ],
+            'fields' => !empty($this->fields()[0]['fields']) ? [...$this->fields()[0]['fields']] : [...$this->fields()],
         ];
     }
 
@@ -250,29 +259,33 @@ class AbstractBlock
     public function defaultOptions(): array
     {
         return [
-            [
-                'name' => 'margin_top_desktop',
-                'type' => 'Text',
-                'label' => 'Margin Top Desktop',
-                'value' => static::MARGIN_TOP_DESKTOP,
-            ],
-            [
-                'name' => 'margin_top_mobile',
-                'type' => 'Text',
-                'label' => 'Margin Top Mobile',
-                'value' => static::MARGIN_TOP_MOBILE,
-            ],
-            [
-                'name' => 'margin_bottom_desktop',
-                'type' => 'Text',
-                'label' => 'Margin Bottom Desktop',
-                'value' => static::MARGIN_BOTTOM_DESKTOP,
-            ],
-            [
-                'name' => 'margin_bottom_mobile',
-                'type' => 'Text',
-                'label' => 'Margin Bottom Mobile',
-                'value' => static::MARGIN_BOTTOM_MOBILE,
+            'name' => __('Default Options'),
+            'type' => 'Section',
+            'fields' => [
+                [
+                    'name' => 'margin_top_desktop',
+                    'type' => 'Text',
+                    'label' => 'Margin Top Desktop',
+                    'value' => static::MARGIN_TOP_DESKTOP,
+                ],
+                [
+                    'name' => 'margin_top_mobile',
+                    'type' => 'Text',
+                    'label' => 'Margin Top Mobile',
+                    'value' => static::MARGIN_TOP_MOBILE,
+                ],
+                [
+                    'name' => 'margin_bottom_desktop',
+                    'type' => 'Text',
+                    'label' => 'Margin Bottom Desktop',
+                    'value' => static::MARGIN_BOTTOM_DESKTOP,
+                ],
+                [
+                    'name' => 'margin_bottom_mobile',
+                    'type' => 'Text',
+                    'label' => 'Margin Bottom Mobile',
+                    'value' => static::MARGIN_BOTTOM_MOBILE,
+                ],
             ],
         ];
     }
