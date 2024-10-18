@@ -41,6 +41,19 @@ class GutengoodBuilder
     }
 
     /**
+     * TimePicker control component
+     *
+     * @param string $name The name of the component.
+     * @param array $args (string label, bool is12hour)
+     *
+     * @return self
+     */
+    public function addTimePicker(string $name, array $args = []): self
+    {
+        return $this->addComponent($name, 'TimePicker', $args);
+    }
+
+    /**
      * Text control component
      *
      * @param string $name The name of the component.
@@ -90,6 +103,19 @@ class GutengoodBuilder
     public function addColorPalette(string $name, array $args = []): self
     {
         return $this->addComponent($name, 'ColorPalette', $args);
+    }
+
+    /**
+     * ColorPicker control component
+     *
+     * @param string $name The name of the component.
+     * @param array $args (string label, bool alfa)
+     *
+     * @return self
+     */
+    public function addColorPicker(string $name, array $args = []): self
+    {
+        return $this->addComponent($name, 'ColorPicker', $args);
     }
 
     /**

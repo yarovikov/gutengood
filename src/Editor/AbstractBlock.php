@@ -92,7 +92,7 @@ class AbstractBlock
     public function getDefaultAttribute(string $type, mixed $value): ?array
     {
         return match ($type) {
-            'Text', 'Textarea', 'Select', 'ColorPalette', 'RichText' => [
+            'TimePicker', 'Text', 'Textarea', 'Select', 'ColorPalette', 'ColorPicker', 'RichText' => [
                 'type' => 'string',
                 'default' => (string) ($value ?? ''),
             ],
