@@ -54,6 +54,19 @@ class GutengoodBuilder
     }
 
     /**
+     * File component
+     *
+     * @param string $name The name of the component.
+     * @param array $args (string label)
+     *
+     * @return self
+     */
+    public function addFile(string $name, array $args = []): self
+    {
+        return $this->addComponent($name, 'File', $args);
+    }
+
+    /**
      * Text control component
      *
      * @param string $name The name of the component.

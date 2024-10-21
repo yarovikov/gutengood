@@ -104,6 +104,10 @@ class AbstractBlock
                 'type' => 'boolean',
                 'default' => (bool) ($value ?? ''),
             ],
+            'File' => [
+                'type' => 'object',
+                'default' => !empty($value) ? (object) $value : (object)[],
+            ],
             'Gallery' => [
                 'type' => 'array',
                 'default' => array_filter((array) ($value ?? [])),
