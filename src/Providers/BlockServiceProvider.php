@@ -50,14 +50,11 @@ class BlockServiceProvider extends ServiceProvider
             function (string $file): void {
                 $src = $this->formatFile($this->folder, $file);
 
-                $this->app->bind($src->handle, function () use ($src) {
-                    $instance = new $src->class();
-                    $instance->type = 'block';
-
-                    return $instance;
+                $this->app->bind("block.$src->handle", function () use ($src) {
+                    return new $src->class();
                 });
 
-                $this->blocks->push($src->handle);
+                $this->blocks->push("block.$src->handle");
             }
         );
     }
@@ -79,7 +76,7 @@ class BlockServiceProvider extends ServiceProvider
         }
 
         foreach ($blocks as $block) {
-            if (true === $this->checkIfIsBlock($block) && !WP_Block_Type_Registry::get_instance()->is_registered($this->app[$block]->name)) {
+            if (!WP_Block_Type_Registry::get_instance()->is_registered($this->app[$block]->name)) {
                 $this->app[$block]->registerBlockType();
             }
         }
@@ -99,9 +96,7 @@ class BlockServiceProvider extends ServiceProvider
         }
 
         foreach ($blocks as $block) {
-            if (true === $this->checkIfIsBlock($block)) {
-                $this->app[$block]->enqueue();
-            }
+            $this->app[$block]->enqueue();
         }
     }
 
@@ -116,7 +111,7 @@ class BlockServiceProvider extends ServiceProvider
         $gutengood_blocks = [];
 
         foreach ($blocks as $block) {
-            if (true === $this->checkIfIsBlock($block) && false === $this->app[$block]->editor_script) {
+            if (false === $this->app[$block]->editor_script) {
                 $gutengood_blocks[] = (object) [
                     'title' => $this->app[$block]->title,
                     'name' => $this->app[$block]->name,
@@ -140,9 +135,7 @@ class BlockServiceProvider extends ServiceProvider
         }
 
         foreach ($blocks as $block) {
-            if (true === $this->checkIfIsBlock($block)) {
-                $this->app[$block]->blockEndpoint();
-            }
+            $this->app[$block]->blockEndpoint();
         }
     }
 
@@ -160,29 +153,22 @@ class BlockServiceProvider extends ServiceProvider
         }
 
         foreach ($blocks as $block) {
-            if (true === $this->checkIfIsBlock($block)) {
-                array_map(function (array $meta): void {
-                    if (empty($meta) || empty($meta['post_type']) || empty($meta['meta_key'])) {
-                        return;
-                    }
+            array_map(function (array $meta): void {
+                if (empty($meta) || empty($meta['post_type']) || empty($meta['meta_key'])) {
+                    return;
+                }
 
-                    register_meta(
-                        $meta['post_type'],
-                        $meta['meta_key'],
-                        [
-                            'show_in_rest' => true,
-                            'single' => true,
-                            'type' => $meta['type'],
-                            'default' => $meta['default'],
-                        ]
-                    );
-                }, $this->app[$block]->blockMeta());
-            }
+                register_meta(
+                    $meta['post_type'],
+                    $meta['meta_key'],
+                    [
+                        'show_in_rest' => true,
+                        'single' => true,
+                        'type' => $meta['type'],
+                        'default' => $meta['default'],
+                    ]
+                );
+            }, $this->app[$block]->blockMeta());
         }
-    }
-
-    public function checkIfIsBlock(string $block): bool
-    {
-        return 'block' === ($this->app[$block]->type ?? '');
     }
 }
