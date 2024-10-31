@@ -145,6 +145,19 @@ class GutengoodBuilder
     }
 
     /**
+     * Message component
+     *
+     * @param string $name The name of the component.
+     * @param array $args (string label, string help)
+     *
+     * @return self
+     */
+    public function addMessage(string $name, array $args = []): self
+    {
+        return $this->addComponent($name, 'Message', $args);
+    }
+
+    /**
      * Image component
      *
      * @param string $name The name of the component.
