@@ -70,7 +70,7 @@ class GutengoodBuilder
      * Link component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label)
+     * @param array $args (string label, bool use_title)
      *
      * @return self
      */
