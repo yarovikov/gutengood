@@ -200,15 +200,17 @@ class GutengoodBuilder
      * Repeater
      *
      * @param string $name The name of the repeater component.
+     * @param array $args (string label, string help, string button_label)
      *
      * @return self
      */
-    public function addRepeater(string $name): self
+    public function addRepeater(string $name, array $args = []): self
     {
         $this->repeater = [
             'name' => $name,
             'type' => 'Repeater',
             'fields' => [],
+            ...$args,
         ];
 
         return $this;
