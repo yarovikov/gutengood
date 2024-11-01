@@ -187,7 +187,7 @@ class GutengoodBuilder
      * Repeater
      *
      * @param string $name The name of the repeater component.
-     * @param array $args (string label, string button_label)
+     * @param array $args (string label, string help, string button_label)
      *
      * @return self
      */
