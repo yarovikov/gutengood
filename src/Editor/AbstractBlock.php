@@ -104,7 +104,7 @@ class AbstractBlock
                 'type' => 'boolean',
                 'default' => (bool) ($value ?? ''),
             ],
-            'File' => [
+            'File', 'Link' => [
                 'type' => 'object',
                 'default' => !empty($value) ? (object) $value : (object)[],
             ],

@@ -67,6 +67,19 @@ class GutengoodBuilder
     }
 
     /**
+     * Link component
+     *
+     * @param string $name The name of the component.
+     * @param array $args (string label, bool use_title)
+     *
+     * @return self
+     */
+    public function addLink(string $name, array $args = []): self
+    {
+        return $this->addComponent($name, 'Link', $args);
+    }
+
+    /**
      * Text control component
      *
      * @param string $name The name of the component.
