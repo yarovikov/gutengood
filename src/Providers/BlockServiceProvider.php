@@ -69,7 +69,7 @@ class BlockServiceProvider extends ServiceProvider
     {
         return (object) [
             'handle' => substr(strtolower(basename(preg_replace('/[A-Z]/', '-$0', $file), '.php')), 1),
-            'class' => '\\App\\' . str_replace('/', '\\', str_replace('.php', '', str_replace('/app/', '',strstr($file, '/app/')))),
+            'class' => '\\App\\' . str_replace('/', '\\', str_replace('.php', '', str_replace('/app/', '',strstr($file, '/app/Editor/')))),
         ];
     }
 
