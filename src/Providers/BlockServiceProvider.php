@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Yarovikov\Gutengood\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
 use WP_Block_Type_Registry;
 
 class BlockServiceProvider extends ServiceProvider
@@ -46,9 +48,13 @@ class BlockServiceProvider extends ServiceProvider
     public function makeInstances(): void
     {
         $this->blocks = collect();
-        collect(glob($this->app->basePath('app/' . $this->folder . '/*.php')))->map(
-            function (string $file): void {
-                $src = $this->formatFile($this->folder, $file);
+
+        $directory = $this->app->basePath('app/' . $this->folder);
+        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+
+        foreach ($iterator as $file) {
+            if ($file->isFile() && $file->getExtension() === 'php') {
+                $src = $this->formatFile($this->folder, $file->getPathname());
 
                 $this->app->bind("block.$src->handle", function () use ($src) {
                     return new $src->class();
@@ -56,14 +62,14 @@ class BlockServiceProvider extends ServiceProvider
 
                 $this->blocks->push("block.$src->handle");
             }
-        );
+        }
     }
 
     public function formatFile(string $class, string $file): object
     {
         return (object) [
             'handle' => substr(strtolower(basename(preg_replace('/[A-Z]/', '-$0', $file), '.php')), 1),
-            'class' => '\\App\\' . str_replace('/', '\\', $class) . '\\' . basename($file, '.php'),
+            'class' => '\\App\\' . str_replace('/', '\\', str_replace('.php', '', str_replace('/app/', '',strstr($file, '/app/Editor/')))),
         ];
     }
 
