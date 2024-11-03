@@ -25,6 +25,27 @@ class AbstractBlock
     public string $title = '';
 
     /**
+     * Block description
+     *
+     * @var string
+     */
+    public string $description = '';
+
+    /**
+     * Block icon
+     *
+     * @var string
+     */
+    public string $icon = 'block-default';
+
+    /**
+     * Block category
+     *
+     * @var string
+     */
+    public string $category = 'common';
+
+    /**
      * Block mame
      *
      * @var string

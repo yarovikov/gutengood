@@ -7,6 +7,9 @@ namespace Yarovikov\Gutengood\Providers;
 use Illuminate\Support\ServiceProvider;
 use WP_Block_Type_Registry;
 
+use function Roots\asset;
+
+
 class BlockServiceProvider extends ServiceProvider
 {
     /**
@@ -115,6 +118,9 @@ class BlockServiceProvider extends ServiceProvider
                 $gutengood_blocks[] = (object) [
                     'title' => $this->app[$block]->title,
                     'name' => $this->app[$block]->name,
+                    'description' => $this->app[$block]->description,
+                    'icon' => $this->getIcon($this->app[$block]->icon),
+                    'category' => $this->app[$block]->category,
                 ];
             }
         }
@@ -170,5 +176,24 @@ class BlockServiceProvider extends ServiceProvider
                 );
             }, $this->app[$block]->blockMeta());
         }
+    }
+
+    /**
+     * Retrieve the block icon.
+     *
+     * @param $icon
+     *
+     * @return string
+     */
+    public function getIcon($icon): string
+    {
+        if ( str_contains( $icon, '<svg' ) ) {
+            $xml = simplexml_load_string($icon);
+            $svg_obj = ['svg' => $xml];
+
+            return json_encode($svg_obj);
+        }
+
+        return $icon;
     }
 }
