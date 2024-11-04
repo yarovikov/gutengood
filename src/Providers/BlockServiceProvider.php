@@ -187,13 +187,10 @@ class BlockServiceProvider extends ServiceProvider
      */
     public function getIcon($icon): string
     {
-        if ( str_contains( $icon, '<svg' ) ) {
+        if (str_contains($icon, '<svg')) {
             $xml = simplexml_load_string($icon);
-            $svg_obj = ['svg' => $xml];
-
-            return json_encode($svg_obj);
+            return $xml ? json_encode(['svg' => $xml]) : $icon;
         }
-
         return $icon;
     }
 }
