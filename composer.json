@@ -12,7 +12,8 @@
     }
   ],
   "require": {
-    "php": "^8.1"
+    "php": "^8.1",
+    "ext-simplexml": "*"
   },
   "autoload": {
     "psr-4": {
