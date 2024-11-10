@@ -1,0 +1,34 @@
+.block-editor-block-inspector .components-color-picker,
+.block-editor-block-inspector .components-datetime__time {
+    .components-base-control {
+        margin-bottom: 0 !important;
+    }
+}
+
+.block-editor-link-control {
+    min-width: 100%;
+
+    .block-editor-link-control__search-item.is-current {
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .block-editor-link-control__search-enter {
+        right: 0.25rem;
+    }
+
+    .components-menu-item__item {
+        min-width: 0;
+    }
+
+    .block-editor-link-control__field {
+        margin-top: 0;
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .block-editor-link-control__search-input-wrapper.has-actions .components-spinner {
+        top: 50%;
+        transform: translateY(-50%);
+    }
+}
