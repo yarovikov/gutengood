@@ -70,7 +70,7 @@ class GutengoodBuilder
      * Link component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, bool use_title)
+     * @param array $args (string label, string placeholder, bool use_title)
      *
      * @return self
      */
@@ -83,7 +83,7 @@ class GutengoodBuilder
      * Text control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, string value)
+     * @param array $args (string label, string help, string value, string placeholder)
      *
      * @return self
      */
@@ -96,7 +96,7 @@ class GutengoodBuilder
      * Textarea control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, string value)
+     * @param array $args (string label, string help, string value, string placeholder)
      *
      * @return self
      */
