@@ -73,7 +73,7 @@ class AbstractBlock
 
         register_block_type($this->name, [
             'attributes' => [...$attributes],
-            'render_callback' => fn(array $attributes, string $content): View => view($this->view, $this->getBlockData($attributes, $content)),
+            'render_callback' => fn(array $attributes, string $content): null|View => $this->view ? view($this->view, $this->getBlockData($attributes, $content)) : null,
         ]);
     }
 
@@ -127,7 +127,7 @@ class AbstractBlock
             ],
             'File', 'Link' => [
                 'type' => 'object',
-                'default' => !empty($value) ? (object) $value : (object)[],
+                'default' => !empty($value) ? (object) $value : (object) [],
             ],
             'Gallery' => [
                 'type' => 'array',
@@ -316,20 +316,31 @@ class AbstractBlock
     }
 
     /**
-     * Block meta if needed
+     * Block meta if needed. Based on fields and options depens on meta parameter
      *
      * @return array
      */
     public function blockMeta(): array
     {
-        return [
-            [
-                'post_type' => 'post',
-                'meta_key' => '',
-                'type' => 'string',
-                'default' => '',
-            ],
+        $fields = [
+            ...!empty($this->options()[0]['fields']) ? $this->options()[0]['fields'] : [],
+            ...!empty($this->fields()[0]['fields']) ? $this->fields()[0]['fields'] : [],
         ];
+
+        if (empty($fields)) {
+            return [];
+        }
+
+        return array_filter(array_map(function (array $field): ?array {
+            if (false === ($field['meta'] ?? false)) {
+                return null;
+            }
+
+            return [
+                'meta_key' => $field['name'],
+                ...$this->getDefaultAttribute($field['type'], $field['default'] ?? ''),
+            ];
+        }, $fields));
     }
 
     /**

@@ -72,7 +72,7 @@ class BlockServiceProvider extends ServiceProvider
     {
         return (object) [
             'handle' => substr(strtolower(basename(preg_replace('/[A-Z]/', '-$0', $file), '.php')), 1),
-            'class' => '\\App\\' . str_replace('/', '\\', str_replace('.php', '', str_replace('/app/', '',strstr($file, '/app/Editor/')))),
+            'class' => '\\App\\' . str_replace('/', '\\', str_replace('.php', '', str_replace('/app/', '', strstr($file, '/app/Editor/')))),
         ];
     }
 
@@ -166,18 +166,19 @@ class BlockServiceProvider extends ServiceProvider
 
         foreach ($blocks as $block) {
             array_map(function (array $meta): void {
-                if (empty($meta) || empty($meta['post_type']) || empty($meta['meta_key'])) {
+                if (empty($meta) || empty($meta['meta_key'])) {
                     return;
                 }
 
-                register_meta(
-                    $meta['post_type'],
+                register_post_meta(
+                    '',
                     $meta['meta_key'],
                     [
                         'show_in_rest' => true,
                         'single' => true,
                         'type' => $meta['type'],
                         'default' => $meta['default'],
+                        'auth_callback' => fn(): bool => current_user_can('edit_posts'),
                     ]
                 );
             }, $this->app[$block]->blockMeta());
