@@ -174,7 +174,7 @@ class BlockServiceProvider extends ServiceProvider
                     '',
                     $meta['meta_key'],
                     [
-                        'show_in_rest' => true,
+                        'show_in_rest' => $meta['show_in_rest'] ?? true,
                         'single' => true,
                         'type' => $meta['type'],
                         'default' => $meta['default'],

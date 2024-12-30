@@ -322,25 +322,53 @@ class AbstractBlock
      */
     public function blockMeta(): array
     {
-        $fields = [
+        $components = [
             ...!empty($this->options()[0]['fields']) ? $this->options()[0]['fields'] : [],
             ...!empty($this->fields()[0]['fields']) ? $this->fields()[0]['fields'] : [],
         ];
 
-        if (empty($fields)) {
-            return [];
-        }
-
-        return array_filter(array_map(function (array $field): ?array {
-            if (false === ($field['meta'] ?? false)) {
+        return array_filter(array_map(function (array $component): ?array {
+            if (false === ($component['meta'] ?? false)) {
                 return null;
             }
 
-            return [
-                'meta_key' => $field['name'],
-                ...$this->getDefaultAttribute($field['type'], $field['default'] ?? ''),
+            return $this->buildMetaArgs($component);
+        }, $components));
+    }
+
+    /**
+     * Build meta args scheme for Repeater
+     *
+     * @return array
+     */
+    public function buildMetaArgs(array $component): array
+    {
+        $args = [
+            'meta_key' => $component['name'],
+            ...$this->getDefaultAttribute($component['type'], $component['default'] ?? ''),
+        ];
+
+        if ('Repeater' === $component['type'] && !empty($component['fields'])) {
+            $args ['show_in_rest'] = [
+                'schema' => [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => [
+                                'type' => 'integer',
+                            ],
+                            ...array_reduce($component['fields'], function (array $carry, array $item): array {
+                                $carry[$item['name']] = $this->buildMetaArgs($item);
+                                return $carry;
+                            }, []),
+                        ],
+                    ],
+                ],
             ];
-        }, $fields));
+        }
+
+        return $args;
     }
 
     /**
