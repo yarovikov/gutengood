@@ -348,6 +348,53 @@ class AbstractBlock
             ...$this->getDefaultAttribute($component['type'], $component['default'] ?? ''),
         ];
 
+        if ('File' === $component['type']) {
+            $args ['show_in_rest'] = [
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'url' => [
+                            'type' => 'string',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                        ],
+                        'size' => [
+                            'type' => 'string',
+                        ],
+                    ],
+                ],
+            ];
+        }
+
+        if ('Link' === $component['type']) {
+            $args ['show_in_rest'] = [
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'url' => [
+                            'type' => 'string',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                        ],
+                        'type' => [
+                            'type' => 'string',
+                        ],
+                        'kind' => [
+                            'type' => 'string',
+                        ],
+                    ],
+                ],
+            ];
+        }
+
         if ('Repeater' === $component['type'] && !empty($component['fields'])) {
             $args ['show_in_rest'] = [
                 'schema' => [
