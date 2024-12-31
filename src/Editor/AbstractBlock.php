@@ -67,6 +67,13 @@ class AbstractBlock
      */
     public bool $editor_script = false;
 
+    /**
+     * Set edit mode true if you want to see editable fields
+     *
+     * @var bool
+     */
+    public bool $edit_mode = false;
+
     public function registerBlockType(): void
     {
         $attributes = $this->getAttributes();
@@ -253,6 +260,7 @@ class AbstractBlock
     public function blockData(): array
     {
         return [
+            'edit_mode' => $this->edit_mode,
             'options' => [
                 ...$this->options(),
                 $this->defaultOptions(),
