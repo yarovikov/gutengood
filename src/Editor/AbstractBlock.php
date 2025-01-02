@@ -67,13 +67,20 @@ class AbstractBlock
      */
     public bool $editor_script = false;
 
+    /**
+     * Set edit mode true if you want to see editable fields
+     *
+     * @var bool
+     */
+    public bool $edit_mode = false;
+
     public function registerBlockType(): void
     {
         $attributes = $this->getAttributes();
 
         register_block_type($this->name, [
             'attributes' => [...$attributes],
-            'render_callback' => fn(array $attributes, string $content): View => view($this->view, $this->getBlockData($attributes, $content)),
+            'render_callback' => fn(array $attributes, string $content): null|View => $this->view ? view($this->view, $this->getBlockData($attributes, $content)) : null,
         ]);
     }
 
@@ -127,7 +134,7 @@ class AbstractBlock
             ],
             'File', 'Link' => [
                 'type' => 'object',
-                'default' => !empty($value) ? (object) $value : (object)[],
+                'default' => !empty($value) ? (object) $value : (object) [],
             ],
             'Gallery' => [
                 'type' => 'array',
@@ -253,6 +260,7 @@ class AbstractBlock
     public function blockData(): array
     {
         return [
+            'edit_mode' => $this->edit_mode,
             'options' => [
                 ...$this->options(),
                 $this->defaultOptions(),
@@ -316,20 +324,106 @@ class AbstractBlock
     }
 
     /**
-     * Block meta if needed
+     * Block meta if needed. Based on fields and options depens on meta parameter
      *
      * @return array
      */
     public function blockMeta(): array
     {
-        return [
-            [
-                'post_type' => 'post',
-                'meta_key' => '',
-                'type' => 'string',
-                'default' => '',
-            ],
+        $components = [
+            ...!empty($this->options()[0]['fields']) ? $this->options()[0]['fields'] : [],
+            ...!empty($this->fields()[0]['fields']) ? $this->fields()[0]['fields'] : [],
         ];
+
+        return array_filter(array_map(function (array $component): ?array {
+            if (false === ($component['meta'] ?? false)) {
+                return null;
+            }
+
+            return $this->buildMetaArgs($component);
+        }, $components));
+    }
+
+    /**
+     * Build meta args scheme for Repeater
+     *
+     * @return array
+     */
+    public function buildMetaArgs(array $component): array
+    {
+        $args = [
+            'meta_key' => $component['name'],
+            ...$this->getDefaultAttribute($component['type'], $component['default'] ?? ''),
+        ];
+
+        if ('File' === $component['type']) {
+            $args ['show_in_rest'] = [
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'url' => [
+                            'type' => 'string',
+                        ],
+                        'name' => [
+                            'type' => 'string',
+                        ],
+                        'size' => [
+                            'type' => 'string',
+                        ],
+                    ],
+                ],
+            ];
+        }
+
+        if ('Link' === $component['type']) {
+            $args ['show_in_rest'] = [
+                'schema' => [
+                    'type' => 'object',
+                    'properties' => [
+                        'id' => [
+                            'type' => 'integer',
+                        ],
+                        'url' => [
+                            'type' => 'string',
+                        ],
+                        'title' => [
+                            'type' => 'string',
+                        ],
+                        'type' => [
+                            'type' => 'string',
+                        ],
+                        'kind' => [
+                            'type' => 'string',
+                        ],
+                    ],
+                ],
+            ];
+        }
+
+        if ('Repeater' === $component['type'] && !empty($component['fields'])) {
+            $args ['show_in_rest'] = [
+                'schema' => [
+                    'type' => 'array',
+                    'items' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'id' => [
+                                'type' => 'integer',
+                            ],
+                            ...array_reduce($component['fields'], function (array $carry, array $item): array {
+                                $carry[$item['name']] = $this->buildMetaArgs($item);
+                                return $carry;
+                            }, []),
+                        ],
+                    ],
+                ],
+            ];
+        }
+
+        return $args;
     }
 
     /**

@@ -44,7 +44,7 @@ class GutengoodBuilder
      * TimePicker control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, bool is12hour)
+     * @param array $args (string label, string help, bool is12hour, bool meta)
      *
      * @return self
      */
@@ -57,7 +57,7 @@ class GutengoodBuilder
      * File component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help)
+     * @param array $args (string label, string help, bool meta)
      *
      * @return self
      */
@@ -70,7 +70,7 @@ class GutengoodBuilder
      * Link component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string placeholder, bool use_title)
+     * @param array $args (string label, string placeholder, bool use_title, bool meta)
      *
      * @return self
      */
@@ -83,7 +83,7 @@ class GutengoodBuilder
      * Text control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, string value, string placeholder)
+     * @param array $args (string label, string help, string value, string placeholder, bool meta)
      *
      * @return self
      */
@@ -96,7 +96,7 @@ class GutengoodBuilder
      * Textarea control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, string value, string placeholder)
+     * @param array $args (string label, string help, string value, string placeholder, bool meta)
      *
      * @return self
      */
@@ -109,7 +109,7 @@ class GutengoodBuilder
      * Toggle control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, bool value)
+     * @param array $args (string label, string help, bool value, bool meta)
      *
      * @return self
      */
@@ -122,7 +122,7 @@ class GutengoodBuilder
      * ColorPalette control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, array colors (string name, string color hex, string slug), string value)
+     * @param array $args (string label, string help, array colors (string name, string color hex, string slug), string value, bool meta)
      *
      * @return self
      */
@@ -135,7 +135,7 @@ class GutengoodBuilder
      * ColorPicker control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, bool alfa)
+     * @param array $args (string label, string help, bool alfa, bool meta)
      *
      * @return self
      */
@@ -148,7 +148,7 @@ class GutengoodBuilder
      * Select control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, array choices (string label, string value), string value)
+     * @param array $args (string label, string help, array choices (string label, string value), string value, bool meta)
      *
      * @return self
      */
@@ -174,7 +174,7 @@ class GutengoodBuilder
      * Image component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, int value)
+     * @param array $args (string label, string help, int value, bool meta)
      *
      * @return self
      */
@@ -187,7 +187,7 @@ class GutengoodBuilder
      * RichText component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, string placeholder, string value)
+     * @param array $args (string label, string help, string placeholder, string value, bool meta)
      *
      * @return self
      */
@@ -200,7 +200,7 @@ class GutengoodBuilder
      * Range control component
      *
      * @param string $name The name of the component.
-     * @param array $args (string label, string help, string placeholder, int step, int min, int max, int value)
+     * @param array $args (string label, string help, string placeholder, int step, int min, int max, int value, bool meta)
      *
      * @return self
      */
@@ -213,7 +213,7 @@ class GutengoodBuilder
      * Repeater
      *
      * @param string $name The name of the repeater component.
-     * @param array $args (string label, string help, string button_label)
+     * @param array $args (string label, string help, string button_label, bool meta)
      *
      * @return self
      */
