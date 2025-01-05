@@ -84,6 +84,7 @@ class PanelServiceProvider extends ServiceProvider
                 'name' => "{$this->app[$panel]->name}",
                 'icon' => $this->getIcon($this->app[$panel]->icon),
                 'title' => $this->app[$panel]->title,
+                'post_types' => $this->app[$panel]->post_types,
             ];
         }
 

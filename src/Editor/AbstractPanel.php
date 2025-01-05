@@ -31,6 +31,8 @@ class AbstractPanel
      */
     public string $name = '';
 
+    public array $post_types = [];
+
     public function panelEndpoint(): void
     {
         register_rest_route("{$this->name}/v1", '/data', [
