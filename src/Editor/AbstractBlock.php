@@ -79,45 +79,18 @@ class AbstractBlock
 
     public function registerBlockType(): void
     {
-        $attributes = $this->getAttributes();
-
-        register_block_type($this->name, [
-            'attributes' => [...$attributes],
-            'render_callback' => fn(array $attributes, string $content): null|View => $this->view ? view($this->view, $this->getBlockData($attributes, $content)) : null,
-        ]);
-    }
-
-    /**
-     * Block attributes
-     *
-     * Types: null, boolean, object, array, string, integer
-     * @var array
-     */
-    public function getAttributes(): array
-    {
-        $attributes = [];
-
         $fields_and_options = [
             ...$this->fields(),
             ...$this->options(),
             ...$this->defaultOptions()['fields'],
         ];
 
-        if (empty($fields_and_options)) {
-            return [];
-        }
+        $attributes = $this->getAttributes($fields_and_options);
 
-        foreach ($fields_and_options as $field_or_option) {
-            if ('Section' === ($field_or_option['type'] ?? '')) {
-                foreach ($field_or_option['fields'] as $section_field_or_option) {
-                    $attributes[$section_field_or_option['name']] = $this->getDefaultAttribute($section_field_or_option['type'], $section_field_or_option['value'] ?? '');
-                }
-            } else {
-                $attributes[$field_or_option['name']] = $this->getDefaultAttribute($field_or_option['type'], $field_or_option['value'] ?? '');
-            }
-        }
-
-        return array_filter($attributes);
+        register_block_type($this->name, [
+            'attributes' => [...$attributes],
+            'render_callback' => fn(array $attributes, string $content): null|View => $this->view ? view($this->view, $this->getBlockData($attributes, $content)) : null,
+        ]);
     }
 
     /**

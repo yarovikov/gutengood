@@ -30,6 +30,33 @@ trait Helpers
         ];
     }
 
+    /**
+     * Attributes
+     *
+     * Types: null, boolean, object, array, string, integer
+     * @var array
+     */
+    public function getAttributes(array $fields_and_options): array
+    {
+        if (empty($fields_and_options)) {
+            return [];
+        }
+
+        $attributes = [];
+
+        foreach ($fields_and_options as $field_or_option) {
+            if ('Section' === ($field_or_option['type'] ?? '')) {
+                foreach ($field_or_option['fields'] as $section_field_or_option) {
+                    $attributes[$section_field_or_option['name']] = $this->getDefaultAttribute($section_field_or_option['type'], $section_field_or_option['value'] ?? '');
+                }
+            } else {
+                $attributes[$field_or_option['name']] = $this->getDefaultAttribute($field_or_option['type'], $field_or_option['value'] ?? '');
+            }
+        }
+
+        return array_filter($attributes);
+    }
+
     public function getDefaultAttribute(string $type, mixed $value): ?array
     {
         return match ($type) {
