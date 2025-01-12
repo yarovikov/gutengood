@@ -23,7 +23,8 @@
   "extra": {
     "acorn": {
       "providers": [
-        "Yarovikov\\Gutengood\\Providers\\BlockServiceProvider"
+        "Yarovikov\\Gutengood\\Providers\\BlockServiceProvider",
+        "Yarovikov\\Gutengood\\Providers\\PanelServiceProvider"
       ]
     }
   }

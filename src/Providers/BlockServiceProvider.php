@@ -8,12 +8,14 @@ use Illuminate\Support\ServiceProvider;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use WP_Block_Type_Registry;
+use Yarovikov\Gutengood\Traits\Helpers;
 
 use function Roots\asset;
 
-
 class BlockServiceProvider extends ServiceProvider
 {
+    use Helpers;
+
     /**
      * Blocks directory
      *
@@ -53,27 +55,21 @@ class BlockServiceProvider extends ServiceProvider
         $this->blocks = collect();
 
         $directory = $this->app->basePath('app/' . $this->folder);
-        $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
 
-        foreach ($iterator as $file) {
-            if ($file->isFile() && $file->getExtension() === 'php') {
-                $src = $this->formatFile($this->folder, $file->getPathname());
+        if (is_dir($directory)) {
+            $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory));
+            foreach ($iterator as $file) {
+                if ($file->isFile() && $file->getExtension() === 'php') {
+                    $src = $this->formatFile($this->folder, $file->getPathname());
 
-                $this->app->bind("block.$src->handle", function () use ($src) {
-                    return new $src->class();
-                });
+                    $this->app->bind("block.$src->handle", function () use ($src) {
+                        return new $src->class();
+                    });
 
-                $this->blocks->push("block.$src->handle");
+                    $this->blocks->push("block.$src->handle");
+                }
             }
         }
-    }
-
-    public function formatFile(string $class, string $file): object
-    {
-        return (object) [
-            'handle' => substr(strtolower(basename(preg_replace('/[A-Z]/', '-$0', $file), '.php')), 1),
-            'class' => '\\App\\' . str_replace('/', '\\', str_replace('.php', '', str_replace('/app/', '', strstr($file, '/app/Editor/')))),
-        ];
     }
 
     public function registerBlocks(): void
@@ -183,21 +179,5 @@ class BlockServiceProvider extends ServiceProvider
                 );
             }, $this->app[$block]->blockMeta());
         }
-    }
-
-    /**
-     * Retrieve the block icon.
-     *
-     * @param $icon
-     *
-     * @return string
-     */
-    public function getIcon($icon): string
-    {
-        if (str_contains($icon, '<svg')) {
-            $xml = simplexml_load_string($icon);
-            return $xml ? json_encode(['svg' => $xml]) : $icon;
-        }
-        return $icon;
     }
 }
