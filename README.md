@@ -1,8 +1,5 @@
-## Block Service Provider + Abstract Gutenberg Block
+## Gutengood
 
-PHP base for fast building server-side gutenberg blocks.
+PHP base for fast building server-side gutenberg blocks and post type panels.
 
 Examples and documentation are here https://github.com/yarovikov/gutengood-examples.
-
-https://github.com/user-attachments/assets/5dd6cc25-ed8a-4a1e-a5b4-a472c9f18710
-
