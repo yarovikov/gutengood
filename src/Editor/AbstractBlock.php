@@ -154,11 +154,12 @@ class AbstractBlock
                 $block['attrs'] = [...$default_attributes, ...$block['attrs'] ?? []];
 
                 array_map(function (array $asset) use ($block): void {
+                    wp_enqueue_style($asset['handle'], $this->getAssetUri($asset['handle'], 'css'));
                     if (empty($asset['condition']) || (is_callable($asset['condition']) && $asset['condition']($block))) {
                         if (!empty($asset['dependencies']) && false === is_admin()) {
-                            bundle($asset['handle'])->enqueueJs(true, $asset['dependencies']);
+                            wp_enqueue_script($asset['handle'], $this->getAssetUri($asset['handle']), $asset['dependencies'], null, true);
                         } else {
-                            bundle($asset['handle'])->enqueue();
+                            wp_enqueue_script($asset['handle'], $this->getAssetUri($asset['handle']), [], null, true);
                         }
                     }
                 }, $assets);

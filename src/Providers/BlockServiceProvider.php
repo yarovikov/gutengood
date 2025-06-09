@@ -32,6 +32,7 @@ class BlockServiceProvider extends ServiceProvider
 
     public function register(): void
     {
+        $this->app->instance('is_vite', (bool) env('IS_VITE'));
         $this->makeInstances();
     }
 
