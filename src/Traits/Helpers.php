@@ -179,6 +179,8 @@ trait Helpers
             $name = "resources/js/blocks/$name";
         }
 
-        return asset("$name.$asset_type_extension")->uri();
+        $path = "$name.$asset_type_extension";
+
+        return asset($path)->exists() ? asset($path)->uri() : '';
     }
 }
