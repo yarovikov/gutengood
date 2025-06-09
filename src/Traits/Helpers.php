@@ -173,12 +173,12 @@ trait Helpers
         return $args;
     }
 
-    public function getAssetUri(string $name): string
+    public function getAssetUri(string $name, string $asset_type_extension = 'js'): string
     {
         if (true === app('is_vite')) {
             $name = "resources/js/blocks/$name";
         }
 
-        return asset("$name.js")->uri();
+        return asset("$name.$asset_type_extension")->uri();
     }
 }
