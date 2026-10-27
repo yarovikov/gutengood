@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Yarovikov\Gutengood\Editor;
 
 use Illuminate\View\View;
-
 use WP_Block_Type_Registry;
 use WP_Post;
 use Yarovikov\Gutengood\Traits\Helpers;
-use function Roots\bundle;
 
 class AbstractBlock
 {
@@ -154,7 +152,12 @@ class AbstractBlock
                 $block['attrs'] = [...$default_attributes, ...$block['attrs'] ?? []];
 
                 array_map(function (array $asset) use ($block): void {
-                    wp_enqueue_style('gutengood-block-' . $asset['handle'], $this->getAssetUri($asset['handle'], 'css'));
+                    $handle = $asset['handle'];
+                    if (app()->make('is_vite')) {
+                        $this->enqueueFromManifest($handle);
+                    } else {
+                        wp_enqueue_style('gutengood-block-' . $asset['handle'], $this->getAssetUri($asset['handle'], 'css'));
+                    }
                     if (empty($asset['condition']) || (is_callable($asset['condition']) && $asset['condition']($block))) {
                         if (!empty($asset['dependencies']) && false === is_admin()) {
                             wp_enqueue_script('gutengood-block-' . $asset['handle'], $this->getAssetUri($asset['handle']), $asset['dependencies'], null, true);
@@ -162,6 +165,8 @@ class AbstractBlock
                             wp_enqueue_script('gutengood-block-' . $asset['handle'], $this->getAssetUri($asset['handle']), [], null, true);
                         }
                     }
+
+
                 }, $assets);
             }
 
@@ -170,6 +175,48 @@ class AbstractBlock
                 $this->enqueueAssets($block['innerBlocks'], $assets);
             }
         }
+    }
+
+    private function enqueueFromManifest(string $handle): void
+    {
+        $manifestPath = public_path('build/manifest.json');
+
+        if (!is_file($manifestPath)) {
+            return;
+        }
+
+        $manifest = json_decode(file_get_contents($manifestPath), true);
+
+        if (!is_array($manifest)) {
+            return;
+        }
+
+        $key = "resources/js/blocks/{$handle}.js";
+
+        if (!isset($manifest[$key])) {
+            return;
+        }
+
+        $visited = [];
+
+        $enqueue = function (string $key) use (&$enqueue, &$visited, $manifest): void {
+            if (isset($visited[$key]) || !isset($manifest[$key])) {
+                return;
+            }
+
+            $visited[$key] = true;
+            $entry = $manifest[$key];
+
+            foreach ($entry['css'] ?? [] as $css) {
+                wp_enqueue_style($css, asset($css)->uri(), [], null);
+            }
+
+            foreach ($entry['imports'] ?? [] as $import) {
+                $enqueue($import);
+            }
+        };
+
+        $enqueue($key);
     }
 
     private function getBlockDefaultAttributes(string $block_name): array

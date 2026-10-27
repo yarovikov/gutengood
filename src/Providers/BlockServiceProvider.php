@@ -39,8 +39,8 @@ class BlockServiceProvider extends ServiceProvider
     public function boot(): void
     {
         add_action('wp_enqueue_scripts', [$this, 'enqueue']);
-        add_action('enqueue_block_editor_assets', [$this, 'enqueue']);
-        add_action('enqueue_block_editor_assets', [$this, 'enqueueBlockEditorAssets']);
+        add_action('enqueue_block_assets', [$this, 'enqueue']);
+        add_action('enqueue_block_assets', [$this, 'enqueueBlockEditorAssets']);
         add_action('init', [$this, 'registerBlocks']);
         add_action('init', [$this, 'registerMeta']);
         add_action('rest_api_init', [$this, 'blockEndpoint']);
