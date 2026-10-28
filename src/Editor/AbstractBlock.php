@@ -151,22 +151,34 @@ class AbstractBlock
                 // Merge default and changed attributes
                 $block['attrs'] = [...$default_attributes, ...$block['attrs'] ?? []];
 
-                array_map(function (array $asset) use ($block): void {
-                    $handle = $asset['handle'];
-                    if (app()->make('is_vite')) {
-                        $this->enqueueFromManifest($handle);
+                $is_vite = app()->make('is_vite');
+
+                array_map(function (array $asset) use ($block, $is_vite): void {
+                    $handle = 'gutengood-block-' . $asset['handle'];
+
+                    // css
+                    if ($is_vite) {
+                        $this->enqueueFromManifest($asset['handle']);
                     } else {
-                        wp_enqueue_style('gutengood-block-' . $asset['handle'], $this->getAssetUri($asset['handle'], 'css'));
-                    }
-                    if (empty($asset['condition']) || (is_callable($asset['condition']) && $asset['condition']($block))) {
-                        if (!empty($asset['dependencies']) && false === is_admin()) {
-                            wp_enqueue_script('gutengood-block-' . $asset['handle'], $this->getAssetUri($asset['handle']), $asset['dependencies'], null, true);
-                        } else {
-                            wp_enqueue_script('gutengood-block-' . $asset['handle'], $this->getAssetUri($asset['handle']), [], null, true);
-                        }
+                        wp_enqueue_style($handle, $this->getAssetUri($asset['handle'], 'css'));
                     }
 
+                    // js
+                    $condition = $asset['condition'] ?? null;
 
+                    if ($condition !== null && (!is_callable($condition) || !$condition($block))) {
+                        return;
+                    }
+
+                    $dependencies = (!empty($asset['dependencies']) && !is_admin()) ? $asset['dependencies'] : [];
+
+                    $src = $this->getAssetUri($asset['handle']);
+
+                    if ($is_vite) {
+                        wp_enqueue_script_module($handle, $src, $dependencies);
+                    } else {
+                        wp_enqueue_script($handle, $src, $dependencies, null, true);
+                    }
                 }, $assets);
             }
 
@@ -369,8 +381,8 @@ class AbstractBlock
             '--block-margin-bottom-mobile' => (int) ($attributes['margin_bottom_mobile'] ?? 0),
         ];
 
-        $styles = implode(';', array_map(fn($key, $value) => "{$key}:{$value}px", array_keys($margins), $margins));
-        $styles = "<style>#{$block_id}{{$styles}}</style>";
+        $styles = implode(';', array_map(fn($key, $value) => "$key:{$value}px", array_keys($margins), $margins));
+        $styles = "<style>#$block_id{{$styles}}</style>";
 
         return wp_kses($styles, ['style' => []]);
     }
